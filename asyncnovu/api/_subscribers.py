@@ -4,6 +4,33 @@ from asyncnovu._utils import format
 from asyncnovu.models import Subscriber
 
 
+# Get an existing subscriber profile.
+# [INFO] https://docs.novu.co/api/delete-subscriber/
+
+async def get_subscriber(self, subscriber_id: str):
+    """
+    Get an existing subscriber profile.
+
+            Parameters:
+                subscriber_id (str): Unique ID of the subscriber.
+
+            Returns:
+                dict : The response from the server with subscriber information, error details if not.
+
+            API Reference:
+                https://docs.novu.co/api/delete-subscriber/
+
+    """
+
+    # Configuring request URL and payload data.
+    url = self.api_url + Paths.SUBSCRIBERS_ENDPOINT + f"/{subscriber_id}"
+
+    # Post the request to Novu server.
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=self.headers)
+        return format(response.status_code, response.json())
+
+
 # Update an existing subscriber profile. If the subscriber foes not exist, a new one will be created.
 # [INFO] https://docs.novu.co/api/update-subscriber/
 
