@@ -2,8 +2,8 @@ from unittest.mock import patch
 
 import httpx
 import pytest
-from novu._utils import format
-from novu.client import NovuClient
+from asyncnovu._utils import format
+from asyncnovu.client import NovuClient
 
 
 @pytest.mark.asyncio

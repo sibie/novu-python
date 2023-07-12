@@ -1,6 +1,6 @@
 import httpx
-from novu._constants import Paths
-from novu._utils import format
+from asyncnovu._constants import Paths
+from asyncnovu._utils import format
 
 
 # Update an existing subscriber profile. If the subscriber foes not exist, a new one will be created.

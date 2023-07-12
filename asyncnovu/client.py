@@ -1,4 +1,4 @@
-from novu._constants import Paths
+from asyncnovu._constants import Paths
 
 
 # Python client for connecting and making requests to a Novu server.
@@ -20,5 +20,5 @@ class NovuClient:
             "Content-Type": "application/json",
         }
     
-    from novu._events import trigger_event, broadcast_event, cancel_event
-    from novu._subscribers import upsert_subscriber, delete_subscriber
+    from asyncnovu._events import trigger_event, broadcast_event, cancel_event
+    from asyncnovu._subscribers import upsert_subscriber, delete_subscriber
