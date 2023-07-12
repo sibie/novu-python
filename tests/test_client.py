@@ -4,6 +4,7 @@ import httpx
 import pytest
 from asyncnovu._utils import format
 from asyncnovu.client import NovuClient
+from asyncnovu.enums.provider import PushProviderIdEnum
 from asyncnovu.models import Subscriber, Trigger
 
 
@@ -141,18 +142,39 @@ async def test_event_actions(httpx_post_mock, httpx_delete_mock):
 
 @pytest.mark.asyncio
 @patch("httpx.AsyncClient.delete")
+@patch("httpx.AsyncClient.put")
 @patch("httpx.AsyncClient.post")
-async def test_subscriber_actions(httpx_post_mock, httpx_delete_mock):
+@patch("httpx.AsyncClient.get")
+async def test_subscriber_actions(httpx_get_mock, httpx_post_mock, httpx_put_mock, httpx_delete_mock):
     # Creating Novu Client.
     client = NovuClient("api_key", "api_url")
 
     # Mocking httpx calls to Novu.
+    httpx_get_mock.return_value = httpx.Response(
+        200, json={"data": "Test passed."}, request=httpx.Request("GET", "test")
+    )
+
     httpx_post_mock.return_value = httpx.Response(
         200, json={"data": "Test passed."}, request=httpx.Request("POST", "test")
     )
 
+    httpx_put_mock.return_value = httpx.Response(
+        200, json={"data": "Test passed."}, request=httpx.Request("PUT", "test")
+    )
+
     httpx_delete_mock.return_value = httpx.Response(
         200, json={"data": "Test passed."}, request=httpx.Request("DELETE", "test")
+    )
+
+    # Testing function to get a subscriber profile.
+    response = await client.get_subscriber("subscriber_id")
+    assert response == {"status_code": 200, "detail": "Test passed."}
+
+    # Checking if correct inputs went into httpx call.
+    assert httpx_get_mock.call_count == 1
+    httpx_get_mock.assert_called_with(
+        "api_url/subscribers/subscriber_id",
+        headers=client.headers,
     )
 
     # Testing function to upsert a subscriber profile.
@@ -177,6 +199,25 @@ async def test_subscriber_actions(httpx_post_mock, httpx_delete_mock):
             "lastName": "Subscriber",
             "phone": None,
             "avatar": None,
+        },
+        headers=client.headers,
+    )
+
+    # Testing function to update subscriber credentials.
+    response = await client.update_subscriber_credentials(
+        "subscriber_id", PushProviderIdEnum.FCM, {"deviceTokens": ["token_1"]}
+    )
+    assert response == {"status_code": 200, "detail": "Test passed."}
+
+    # Checking if correct inputs went into httpx call.
+    assert httpx_put_mock.call_count == 1
+    httpx_put_mock.assert_called_with(
+        "api_url/subscribers/subscriber_id/credentials",
+        json={
+            "providerId": "fcm",
+            "credentials": {
+                "deviceTokens": ["token_1"],
+            },
         },
         headers=client.headers,
     )

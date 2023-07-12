@@ -20,5 +20,18 @@ class NovuClient:
             "Content-Type": "application/json",
         }
     
-    from asyncnovu.api._events import trigger_event, bulk_trigger, broadcast_event, cancel_event
-    from asyncnovu.api._subscribers import get_subscriber, upsert_subscriber, delete_subscriber
+    # Events
+    from asyncnovu.api._events import (
+        broadcast_event,
+        bulk_trigger,
+        cancel_event,
+        trigger_event,
+    )
+
+    # Subscribers
+    from asyncnovu.api._subscribers import (
+        delete_subscriber,
+        get_subscriber,
+        update_subscriber_credentials,
+        upsert_subscriber,
+    )
