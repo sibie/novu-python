@@ -63,6 +63,48 @@ async def test_event_actions(httpx_post_mock, httpx_delete_mock):
         headers=client.headers,
     )
 
+    # Testing bulk trigger function.
+    response = await client.bulk_trigger(
+        [
+            Trigger(
+                id="trigger_1",
+                subscribers=["subscriber_1"],
+                payload={"data_1": "data_1"},
+                overrides={"overrides_1": "overrides_1"}
+            ),
+            Trigger(
+                id="trigger_2",
+                subscribers=["subscriber_2"],
+                payload={"data_2": "data_2"},
+                overrides={"overrides_2": "overrides_2"}
+            ),
+        ]
+    )
+    assert response == {"status_code": 200, "detail": "Test passed."}
+
+    # Checking if correct inputs went into httpx call.
+    assert httpx_post_mock.call_count == 2
+    httpx_post_mock.assert_called_with(
+        "api_url/events/trigger/bulk",
+        json={
+            "events": [
+                {
+                    "name": "trigger_1",
+                    "to": ["subscriber_1"],
+                    "payload": {"data_1": "data_1"},
+                    "overrides": {"overrides_1": "overrides_1"},
+                },
+                {
+                    "name": "trigger_2",
+                    "to": ["subscriber_2"],
+                    "payload": {"data_2": "data_2"},
+                    "overrides": {"overrides_2": "overrides_2"},
+                },
+            ],
+        },
+        headers=client.headers,
+    )
+
     # Testing function to broadcast an event.
     response = await client.broadcast_event(
         Trigger(
@@ -74,7 +116,7 @@ async def test_event_actions(httpx_post_mock, httpx_delete_mock):
     assert response == {"status_code": 200, "detail": "Test passed."}
 
     # Checking if correct inputs went into httpx call.
-    assert httpx_post_mock.call_count == 2
+    assert httpx_post_mock.call_count == 3
     httpx_post_mock.assert_called_with(
         "api_url/events/trigger/broadcast",
         json={

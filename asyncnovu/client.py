@@ -20,5 +20,5 @@ class NovuClient:
             "Content-Type": "application/json",
         }
     
-    from asyncnovu._events import trigger_event, broadcast_event, cancel_event
+    from asyncnovu._events import trigger_event, bulk_trigger, broadcast_event, cancel_event
     from asyncnovu._subscribers import upsert_subscriber, delete_subscriber

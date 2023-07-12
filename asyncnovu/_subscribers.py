@@ -12,7 +12,7 @@ async def upsert_subscriber(self, subscriber: Subscriber):
     Update an existing subscriber profile. If the subscriber does not exist, a new one will be created.
 
             Parameters:
-                    subscriber (Subscriber): Object containing subscriber details to save in Novu.
+                subscriber (Subscriber): Object containing subscriber details to save in Novu.
 
             Returns:
                 dict : The response from the server with the full profile dataset if the request succeeded, error details if not.
@@ -47,7 +47,7 @@ async def delete_subscriber(self, subscriber_id: str):
     Delete an existing subscriber profile.
 
             Parameters:
-                    subscriber_id (str): Unique ID of the subscriber.
+                subscriber_id (str): Unique ID of the subscriber.
 
             Returns:
                 dict : The response from the server with acknowledgement if the request succeeded, error details if not.

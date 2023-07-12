@@ -12,7 +12,7 @@ async def trigger_event(self, trigger: Trigger):
     Trigger a notification workflow.
 
             Parameters:
-                    trigger (Trigger): Trigger request details to identify and configure the required Novu workflow.
+                trigger (Trigger): Trigger request details to identify and configure the required Novu workflow.
 
             Returns:
                 dict : The response from the server with acknowledgement if the request succeeded, error details if not.
@@ -36,6 +36,43 @@ async def trigger_event(self, trigger: Trigger):
         return format(response.status_code, response.json())
 
 
+# Trigger multiple notification workflows in bulk.
+# [INFO] https://docs.novu.co/api/bulk-trigger-event/
+
+async def bulk_trigger(self, triggers: list[Trigger]):
+    """
+    Trigger multiple notification workflows in bulk.
+
+            Parameters:
+                triggers (list[Trigger]): List of Trigger requests to execute.
+
+            Returns:
+                dict : The response from the server with acknowledgement if the request succeeded, error details if not.
+
+            API Reference: https://docs.novu.co/api/trigger-event/
+
+    """
+
+    # Configuring request URL and payload data.
+    url = self.api_url + Paths.TRIGGER_ENDPOINT + Paths.BULK_SUFFIX
+    json = {
+        "events": [
+            {
+                "name": trigger.id,
+                "to": trigger.subscribers,
+                "payload": trigger.payload,
+                "overrides": trigger.overrides,
+            }
+            for trigger in triggers
+        ],
+    }
+
+    # Post the request to Novu server.
+    async with httpx.AsyncClient() as client:
+        response = await client.post(url, json=json, headers=self.headers)
+        return format(response.status_code, response.json())
+
+
 # Broadcast a notification to all existing subscribers.
 # [INFO] https://docs.novu.co/api/broadcast-event-to-all/
 
@@ -44,9 +81,9 @@ async def broadcast_event(self, trigger: Trigger):
     Broadcast a notification to all existing subscribers.
 
             Parameters:
-                    trigger (Trigger): Trigger request details to identify and configure the required Novu workflow.
+                trigger (Trigger): Trigger request details to identify and configure the required Novu workflow.
 
-                    NOTE: Omit the 'subscribers' field from the Trigger object as it will not be used.
+                NOTE: Omit the 'subscribers' field from the Trigger object as it will not be used.
 
             Returns:
                 dict : The response from the server with acknowledgement if the request succeeded, error details if not.
@@ -77,7 +114,7 @@ async def cancel_event(self, transaction_id):
     Cancel any active or pending notification workflow using a previously generated transaction ID.
 
             Parameters:
-                    transaction_id (str): Unique trnasaction ID of the workflow to be cancelled.
+                transaction_id (str): Unique trnasaction ID of the workflow to be cancelled.
 
             Returns:
                 dict : The response from the server with acknowledgement if the request succeeded, error details if not.
