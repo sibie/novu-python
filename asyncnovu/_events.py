@@ -1,26 +1,18 @@
 import httpx
 from asyncnovu._constants import Paths
 from asyncnovu._utils import format
+from asyncnovu.models import Trigger
 
 
 # Trigger a notification workflow.
 # [INFO] https://docs.novu.co/api/trigger-event/
 
-async def trigger_event(
-    self,
-    trigger_id: str,
-    subscribers: list[str],
-    payload: dict = None,
-    overrides: dict = None,
-):
+async def trigger_event(self, trigger: Trigger):
     """
     Trigger a notification workflow.
 
             Parameters:
-                    trigger_id (str): Unique ID of the Novu template.
-                    subscribers (list[str]): List of subscriber IDs for users requiring notifications.
-                    payload (dict): Optional dictionary with custom attributes needed by the template.
-                    overrides (dict): Additional attributes needed for template integrations.
+                    trigger (Trigger): Trigger request details to identify and configure the required Novu workflow.
 
             Returns:
                 dict : The response from the server with acknowledgement if the request succeeded, error details if not.
@@ -32,10 +24,10 @@ async def trigger_event(
     # Configuring request URL and payload data.
     url = self.api_url + Paths.TRIGGER_ENDPOINT
     json = {
-        "name": trigger_id,
-        "to": subscribers,
-        "payload": payload,
-        "overrides": overrides,
+        "name": trigger.id,
+        "to": trigger.subscribers,
+        "payload": trigger.payload,
+        "overrides": trigger.overrides,
     }
 
     # Post the request to Novu server.
@@ -47,19 +39,14 @@ async def trigger_event(
 # Broadcast a notification to all existing subscribers.
 # [INFO] https://docs.novu.co/api/broadcast-event-to-all/
 
-async def broadcast_event(
-    self,
-    trigger_id: str,
-    payload: dict = None,
-    overrides: dict = None,
-):
+async def broadcast_event(self, trigger: Trigger):
     """
     Broadcast a notification to all existing subscribers.
 
             Parameters:
-                    trigger_id (str): Unique ID of the Novu template.
-                    payload (dict): Optional dictionary with custom attributes needed by the template.
-                    overrides (dict): Additional attributes needed for template integrations.
+                    trigger (Trigger): Trigger request details to identify and configure the required Novu workflow.
+
+                    NOTE: Omit the 'subscribers' field from the Trigger object as it will not be used.
 
             Returns:
                 dict : The response from the server with acknowledgement if the request succeeded, error details if not.
@@ -69,11 +56,11 @@ async def broadcast_event(
     """
 
     # Configuring request URL and payload data.
-    url = self.api_url + Paths.BROADCAST_ENDPOINT
+    url = self.api_url + Paths.TRIGGER_ENDPOINT + Paths.BROADCAST_SUFFIX
     json = {
-        "name": trigger_id,
-        "payload": payload,
-        "overrides": overrides,
+        "name": trigger.id,
+        "payload": trigger.payload,
+        "overrides": trigger.overrides,
     }
 
     # Post the request to Novu server.
@@ -85,10 +72,7 @@ async def broadcast_event(
 # Cancel any active or pending notification workflow using a previously generated transaction ID.
 # [INFO] https://docs.novu.co/api/cancel-triggered-event/
 
-async def cancel_event(
-    self,
-    transaction_id,
-):
+async def cancel_event(self, transaction_id):
     """
     Cancel any active or pending notification workflow using a previously generated transaction ID.
 

@@ -6,7 +6,7 @@ class NovuClient:
     """
     A class to interface with Novu APIs and execute different operations.
 
-    Attributes:
+    Parameters:
 
     api_key (str): Unique Novu API key to authorize requests to the Novu server.
     api_url (str): Novu Server URL for sending requests. If not provided, default value would be https://api.novu.co/v1

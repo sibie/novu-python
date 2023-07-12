@@ -4,6 +4,7 @@ import httpx
 import pytest
 from asyncnovu._utils import format
 from asyncnovu.client import NovuClient
+from asyncnovu.models import Subscriber, Trigger
 
 
 @pytest.mark.asyncio
@@ -40,7 +41,12 @@ async def test_event_actions(httpx_post_mock, httpx_delete_mock):
 
     # Testing trigger function to send an event.
     response = await client.trigger_event(
-        "trigger_id", ["subscriber_id"], {"data": "data"}, {"overrides": "overrides"}
+        Trigger(
+            id="trigger_id",
+            subscribers=["subscriber_id"],
+            payload={"data": "data"},
+            overrides={"overrides": "overrides"}
+        )
     )
     assert response == {"status_code": 200, "detail": "Test passed."}
 
@@ -59,7 +65,11 @@ async def test_event_actions(httpx_post_mock, httpx_delete_mock):
 
     # Testing function to broadcast an event.
     response = await client.broadcast_event(
-        "trigger_id", {"data": "data"}, {"overrides": "overrides"}
+        Trigger(
+            id="trigger_id",
+            payload={"data": "data"},
+            overrides={"overrides": "overrides"},
+        )
     )
     assert response == {"status_code": 200, "detail": "Test passed."}
 
@@ -105,7 +115,12 @@ async def test_subscriber_actions(httpx_post_mock, httpx_delete_mock):
 
     # Testing function to upsert a subscriber profile.
     response = await client.upsert_subscriber(
-        "subscriber_id", "subscriber@cbamz.com", "Test", "Subscriber"
+        Subscriber(
+            id="subscriber_id",
+            email="subscriber@gmail.com",
+            first_name="Test",
+            last_name="Subscriber",
+        )
     )
     assert response == {"status_code": 200, "detail": "Test passed."}
 
@@ -115,7 +130,7 @@ async def test_subscriber_actions(httpx_post_mock, httpx_delete_mock):
         "api_url/subscribers",
         json={
             "subscriberId": "subscriber_id",
-            "email": "subscriber@cbamz.com",
+            "email": "subscriber@gmail.com",
             "firstName": "Test",
             "lastName": "Subscriber",
             "phone": None,
